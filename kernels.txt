@@ -1,0 +1,7 @@
+\begindata
+KERNELS_TO_LOAD=(
+'spice-kernels/naif0012.tls',
+'spice-kernels/de435.bsp',
+'spice-kernels/earth_070425_370426_predict.bpc')
+\begintext
+
