@@ -22,22 +22,48 @@ parser.add_argument("--objects", dest="objects_filename", help="filename of obje
 parser.add_argument("--tle", dest="tle_filename", help="filename of TLEs", required=True)
 args = parser.parse_args()
 
-if args.telescope in ['T17','T30','T31','T32','T33']:               # Australia (Siding Springs)
+filter_broadband_table = {
+  'T8': 'Luminance',
+  'T9': 'Luminance',
+  'T12': 'Luminance',
+  'T17': 'Luminance',
+  'T30': 'Luminance',
+  'T31': 'Luminance',
+  'T32': 'Luminance',
+  'T33': 'Luminance',
+  'T63': 'Luminance',
+  'T68': None,
+  'T24': 'Luminance',
+  'T40': 'Luminance',
+  'T5': 'Clear',
+  'T11': 'Luminance',
+  'T14': 'Luminance',
+  'T20': 'Luminance',
+  'T21': 'Luminance',
+  'T7': 'Luminance',
+  'T16': 'Luminance',
+  'T18': 'Luminance',
+}  
+
+def filter_broadband(t):
+  return filter_broadband_table[t]
+
+if args.telescope in ['T8','T9','T12','T17','T30','T31','T32','T33']:      # Australia (Siding Spring Observatory)
   site = Topos('31.2733055 S', '149.0697472 E', elevation_m=1165)
-  filter = 'Luminance'
-elif args.telescope in ['T63']:                                     # Australia (Bathurst)
-  pass
-elif args.telescope in ['T24']:
-  site = Topos('37.070278 N','119.412778 W',elevation_m=1405)       # California
-  filter = 'Luminance'
-elif args.telescope in ['T40']:                                     # Chile
-  pass
-elif args.telescope in ['T11','T21']:                               # New Mexico
-  pass
-elif args.telescope in ['T7','T18']:                                # Spain
-  pass
+elif args.telescope in ['T63','T64','T68']:                                # Australia (Bathurst Observatory)
+  site = Topos('33.3966667 S', '149.4916667 E', elevation_m=650)
+elif args.telescope in ['T24']:                                            # California (Sierra Remote Observatory)
+  site = Topos('37.070278 N','119.412778 W',elevation_m=1405)
+elif args.telescope in ['T40']:                                            # Chile
+  site = Topos('30.4533333 S','70.7533333 W',elevation_m=1560)
+elif args.telescope in ['T5','T11','T14','T20','T21']:                     # New Mexico
+  site = Topos('32.9036111 N','105.5283333 W',elevation_m=2225)
+elif args.telescope in ['T7','T16','T18']:                                 # Spain
+  site = Topos('38.1655555 N','2.3263333 W',elevation_m=1650)
 else:
   raise 'unknown telescope'
+
+filter = filter_broadband(args.telescope)
 
 # telescope timing model
 
@@ -58,8 +84,9 @@ acp_lag_bias = -16.0
 print("""; telescope %s
 #NOADAPTIVEFOCUS
 #EXPRESS
-#FILTER Luminance
 #BINNING 1""" % (args.telescope))
+if filter:
+  print("#FILTER %s" % filter)
 
 ts = load.timescale()
 
